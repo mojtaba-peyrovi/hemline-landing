@@ -1,840 +1,706 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Hemline – Your AI-Powered Wardrobe Stylist</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Hemline is an AI-powered wardrobe stylist that creates outfits from the clothes you already own. Apply for free early access to our pilot." />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --bg-dark: #050816;
-      --bg-card: rgba(12, 16, 32, 0.9);
-      --accent: #ff4b8b;
-      --accent-soft: rgba(255, 75, 139, 0.12);
-      --text-main: #f7f7ff;
-      --text-muted: #b1b3c8;
-      --border-subtle: rgba(255, 255, 255, 0.08);
-      --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.55);
-      --radius-lg: 18px;
-      --radius-pill: 999px;
-      --max-width: 1120px;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top left, #242253, #050816 50%, #050816 70%, #000000);
-      color: var(--text-main);
-      min-height: 100vh;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    .page {
-      max-width: var(--max-width);
-      margin: 0 auto;
-      padding: 20px 16px 64px;
-    }
-
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 32px;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      padding: 12px 10px;
-      backdrop-filter: blur(16px);
-      background: linear-gradient(to bottom, rgba(5, 8, 22, 0.95), rgba(5, 8, 22, 0.2));
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .brand-mark {
-      width: 32px;
-      height: 32px;
-      border-radius: 12px;
-      background: radial-gradient(circle at 20% 0, #ffe0f0, #ff4b8b 40%, #6e59ff 80%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #050816;
-      font-weight: 700;
-      font-size: 18px;
-      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
-    }
-
-    .brand-text {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .brand-name {
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      font-size: 14px;
-      text-transform: uppercase;
-    }
-
-    .brand-tagline {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .nav-cta {
-      padding: 8px 16px;
-      border-radius: var(--radius-pill);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      background: linear-gradient(120deg, rgba(255, 75, 139, 0.14), rgba(110, 89, 255, 0.22));
-      font-size: 12px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-      transition: transform 0.12s ease, box-shadow 0.12s ease;
-      white-space: nowrap;
-    }
-
-    .nav-cta span {
-      font-size: 14px;
-    }
-
-    .nav-cta:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.65);
-    }
-
-    main {
-      margin-top: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 40px;
-    }
-
-    /* Hero */
-
-    .hero {
-      display: grid;
-      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-      gap: 32px;
-      align-items: center;
-    }
-
-    @media (max-width: 840px) {
-      .hero {
-        grid-template-columns: minmax(0, 1fr);
-      }
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--text-muted);
-      margin-bottom: 10px;
-    }
-
-    .eyebrow-pill {
-      width: 6px;
-      height: 6px;
-      border-radius: 999px;
-      background: var(--accent);
-      box-shadow: 0 0 14px rgba(255, 75, 139, 0.9);
-    }
-
-    .hero-title {
-      font-size: clamp(30px, 5vw, 40px);
-      line-height: 1.1;
-      margin-bottom: 14px;
-    }
-
-    .hero-title span.accent {
-      background: linear-gradient(120deg, #ff9ac7, #ff4b8b, #b48fff);
-      -webkit-background-clip: text;
-      color: transparent;
-    }
-
-    .hero-subtitle {
-      font-size: 15px;
-      color: var(--text-muted);
-      max-width: 450px;
-      margin-bottom: 20px;
-    }
-
-    .hero-subtitle strong {
-      color: var(--text-main);
-      font-weight: 500;
-    }
-
-    .hero-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-      margin-bottom: 16px;
-    }
-
-    .btn-primary {
-      padding: 11px 20px;
-      border-radius: var(--radius-pill);
-      border: none;
-      cursor: pointer;
-      background: linear-gradient(135deg, #ff4b8b, #ff9ac7);
-      color: #050816;
-      font-weight: 600;
-      font-size: 14px;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
-      transition: transform 0.12s ease, box-shadow 0.12s ease;
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 18px 42px rgba(0, 0, 0, 0.75);
-    }
-
-    .btn-ghost {
-      padding: 10px 16px;
-      border-radius: var(--radius-pill);
-      border: 1px solid var(--border-subtle);
-      background: rgba(5, 8, 22, 0.6);
-      color: var(--text-muted);
-      font-size: 13px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      transition: border-color 0.12s ease, background 0.12s ease, color 0.12s ease;
-    }
-
-    .btn-ghost:hover {
-      border-color: rgba(255, 255, 255, 0.35);
-      background: rgba(12, 16, 32, 0.9);
-      color: var(--text-main);
-    }
-
-    .hero-footnote {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .hero-footnote span {
-      color: #e2e3ff;
-      font-weight: 500;
-    }
-
-    /* Hero card */
-
-    .hero-card {
-      border-radius: 24px;
-      background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.12), rgba(12, 16, 32, 0.98));
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      box-shadow: var(--shadow-soft);
-      padding: 18px 18px 16px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero-card-tag {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .hero-card-tag span.dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: #22c55e;
-      box-shadow: 0 0 10px rgba(34, 197, 94, 0.9);
-    }
-
-    .hero-card-main {
-      display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-      gap: 12px;
-      align-items: flex-start;
-    }
-
-    @media (max-width: 560px) {
-      .hero-card-main {
-        grid-template-columns: minmax(0, 1fr);
-      }
-    }
-
-    .outfit-list {
-      font-size: 13px;
-      background: rgba(5, 8, 22, 0.85);
-      border-radius: 16px;
-      padding: 10px 12px;
-      border: 1px solid var(--border-subtle);
-    }
-
-    .outfit-list-title {
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: var(--text-muted);
-      margin-bottom: 6px;
-    }
-
-    .outfit-item {
-      padding: 6px 0;
-      border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
-    .outfit-item:last-child {
-      border-bottom: none;
-    }
-
-    .outfit-item-name {
-      font-weight: 500;
-      font-size: 13px;
-    }
-
-    .outfit-item-note {
-      font-size: 11px;
-      color: var(--text-muted);
-      text-align: right;
-    }
-
-    .hero-persona {
-      border-radius: 18px;
-      background: linear-gradient(160deg, rgba(255, 255, 255, 0.06), rgba(5, 8, 22, 0.95));
-      padding: 10px 12px;
-      border: 1px solid var(--border-subtle);
-      font-size: 12px;
-    }
-
-    .persona-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 8px;
-    }
-
-    .persona-name {
-      font-weight: 500;
-    }
-
-    .persona-tag {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .persona-pill {
-      padding: 4px 10px;
-      border-radius: var(--radius-pill);
-      background: var(--accent-soft);
-      color: #ffd0e4;
-      font-size: 11px;
-    }
-
-    .persona-body {
-      color: var(--text-muted);
-      line-height: 1.5;
-    }
-
-    .hero-glow {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background: radial-gradient(circle at 10% -20%, rgba(255, 255, 255, 0.18), transparent 50%),
-                  radial-gradient(circle at 110% 130%, rgba(255, 75, 139, 0.18), transparent 55%);
-      opacity: 0.7;
-      mix-blend-mode: screen;
-    }
-
-    /* Sections */
-
-    section {
-      border-radius: var(--radius-lg);
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      box-shadow: var(--shadow-soft);
-      padding: 20px 18px;
-      backdrop-filter: blur(20px);
-    }
-
-    section + section {
-      margin-top: 10px;
-    }
-
-    .section-title {
-      font-size: 16px;
-      margin-bottom: 10px;
-    }
-
-    .section-subtitle {
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-bottom: 14px;
-    }
-
-    .two-col {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      gap: 16px;
-    }
-
-    @media (max-width: 720px) {
-      .two-col {
-        grid-template-columns: minmax(0, 1fr);
-      }
-    }
-
-    .bullet-list {
-      list-style: none;
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-
-    .bullet-list li {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 8px;
-      align-items: flex-start;
-    }
-
-    .bullet-list li span.bullet-dot {
-      margin-top: 4px;
-      width: 6px;
-      height: 6px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.4);
-    }
-
-    .numbered-steps {
-      list-style: none;
-      counter-reset: step-counter;
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-
-    .numbered-steps li {
-      counter-increment: step-counter;
-      display: grid;
-      grid-template-columns: auto 1fr;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-
-    .step-badge {
-      width: 22px;
-      height: 22px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: 500;
-    }
-
-    .step-content-title {
-      font-weight: 500;
-      font-size: 13px;
-      margin-bottom: 2px;
-      color: #f0f1ff;
-    }
-
-    .tag-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 4px;
-    }
-
-    .tag {
-      font-size: 11px;
-      padding: 4px 9px;
-      border-radius: var(--radius-pill);
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: var(--text-muted);
-    }
-
-    .callout {
-      font-size: 12px;
-      padding: 10px 12px;
-      border-radius: 12px;
-      background: rgba(5, 8, 22, 0.9);
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      color: var(--text-muted);
-      display: flex;
-      gap: 10px;
-      align-items: flex-start;
-      margin-top: 8px;
-    }
-
-    .callout-icon {
-      font-size: 16px;
-      margin-top: 2px;
-    }
-
-    .cta-section {
-      text-align: center;
-    }
-
-    .cta-section p {
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-top: 6px;
-    }
-
-    footer {
-      margin-top: 26px;
-      font-size: 11px;
-      color: var(--text-muted);
-      text-align: center;
-    }
-
-    footer a {
-      text-decoration: underline;
-      text-decoration-style: dotted;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <title>Hemline – Your AI-Powered Wardrobe Stylist</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Hemline is an AI-powered wardrobe stylist that creates outfits from the clothes you already own. Apply for free early access to our pilot." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* --- NEW FASHION AESTHETIC VARIABLES --- */
+    :root {
+      --bg-light: #ffffff; /* Main background: White */
+      --bg-card: #ffffff; /* Card background: White */
+      --accent: #e91e63; /* Accent: Bolder Fashion Pink */
+      --accent-soft: rgba(233, 30, 99, 0.08); /* Soft pink for backgrounds */
+      --text-main: #1c1c1c; /* Main text: Dark Charcoal */
+      --text-muted: #6a6a6a; /* Muted text: Medium Grey */
+      --border-subtle: #e0e0e0; /* Subtle border: Light Grey */
+      --shadow-soft: 0 4px 15px rgba(0, 0, 0, 0.05); /* Very light shadow */
+      --radius-lg: 12px;
+      --radius-pill: 999px;
+      --max-width: 1120px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* New Body: White Background */
+    body {
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg-light);
+      color: var(--text-main);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.5;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 16px 64px;
+    }
+
+    /* Header: Light Mode Sticky */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      padding: 16px 10px;
+      backdrop-filter: blur(8px);
+      background: rgba(255, 255, 255, 0.95);
+      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 32px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--text-main); /* Black square */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--bg-light); /* White H */
+      font-weight: 800;
+      font-size: 18px;
+      box-shadow: none;
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .brand-name {
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      font-size: 16px;
+      text-transform: uppercase;
+    }
+
+    .brand-tagline {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .nav-cta {
+      padding: 8px 16px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border-subtle);
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: background 0.12s ease;
+      white-space: nowrap;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .nav-cta:hover {
+      background: rgba(233, 30, 99, 0.15);
+    }
+
+    main {
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    /* Hero */
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      gap: 40px;
+      align-items: center;
+      padding: 30px 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-soft);
+      border-radius: var(--radius-lg);
+    }
+
+    @media (max-width: 840px) {
+      .hero {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .eyebrow-pill {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 10px rgba(233, 30, 99, 0.5);
+    }
+
+    .hero-title {
+      font-size: clamp(32px, 5vw, 44px);
+      line-height: 1.1;
+      margin-bottom: 14px;
+      font-weight: 800;
+    }
+
+    .hero-title span.accent {
+      /* Adjusted gradient for light mode */
+      background: linear-gradient(120deg, #6e59ff, var(--accent));
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: 16px;
+      color: var(--text-muted);
+      max-width: 450px;
+      margin-bottom: 20px;
+    }
+
+    .hero-subtitle strong {
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .btn-primary {
+      padding: 12px 22px;
+      border-radius: var(--radius-pill);
+      border: none;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--accent), #ff9ac7);
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 8px 16px rgba(233, 30, 99, 0.25);
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(233, 30, 99, 0.35);
+    }
+
+    .btn-ghost {
+      padding: 11px 18px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border-subtle);
+      background: none;
+      color: var(--text-main);
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: border-color 0.12s ease, background 0.12s ease, color 0.12s ease;
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--text-main);
+      background: var(--accent-soft);
+    }
+
+    .hero-footnote {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .hero-footnote span {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* Hero Image */
+    .hero-image-container {
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      height: 100%;
+      min-height: 350px;
+      background: #f0f0f0;
+    }
+
+    .hero-image-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Sections */
+    section {
+      border-radius: var(--radius-lg);
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-soft);
+      padding: 30px 24px;
+    }
+
+    section + section {
+      margin-top: 10px;
+    }
+
+    .section-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .section-subtitle {
+      font-size: 15px;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+    }
+
+    /* Feature Grid for Scannability */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-top: 15px;
+    }
+
+    .feature-card {
+      padding: 20px;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      background: var(--bg-card);
+    }
+
+    .feature-card-icon {
+      font-size: 20px;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    .feature-card-title {
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    .feature-card-body {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    
+    /* List Styling (Cleaned up from original) */
+    .bullet-list {
+      list-style: none;
+      font-size: 14px;
+      color: var(--text-muted);
+      padding-left: 0;
+    }
+
+    .bullet-list li {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+      align-items: flex-start;
+    }
+
+    .bullet-list li span.bullet-dot {
+      margin-top: 7px;
+      width: 5px;
+      height: 5px;
+      border-radius: 999px;
+      background: var(--text-main);
+      flex-shrink: 0;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 24px;
+    }
+
+    @media (max-width: 720px) {
+      .two-col {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+    
+    /* Callout Styling (Cleaned up) */
+    .callout {
+      font-size: 13px;
+      padding: 14px 16px;
+      border-radius: var(--radius-lg);
+      background: var(--accent-soft);
+      border: 1px solid var(--accent);
+      color: var(--text-main);
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin-top: 8px;
+    }
+
+    .callout-icon {
+      font-size: 18px;
+      margin-top: 0;
+      flex-shrink: 0;
+    }
+    
+    /* Step Numbers Styling (Cleaned up) */
+    .numbered-steps {
+      list-style: none;
+      counter-reset: step-counter;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .numbered-steps li {
+      counter-increment: step-counter;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .step-badge {
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      background: var(--text-main);
+      border: 1px solid var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--bg-light);
+      flex-shrink: 0;
+    }
+
+    .step-content-title {
+      font-weight: 600;
+      font-size: 15px;
+      margin-bottom: 2px;
+      color: var(--text-main);
+    }
+    
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 15px;
+    }
+
+    .tag {
+      font-size: 11px;
+      padding: 5px 10px;
+      border-radius: var(--radius-pill);
+      background: #f7f7f7;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    
+    .cta-section {
+      text-align: center;
+    }
+
+    .cta-section p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 10px;
+    }
+
+    footer {
+      margin-top: 40px;
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    footer a {
+      text-decoration: underline;
+      text-decoration-style: dotted;
+    }
+  </style>
 </head>
 <body>
-  <div class="page">
-    <header>
-      <div class="brand">
-        <div class="brand-mark">H</div>
-        <div class="brand-text">
-          <div class="brand-name">Hemline</div>
-          <div class="brand-tagline">AI wardrobe stylist · Early access</div>
-        </div>
-      </div>
-      <button class="nav-cta" onclick="scrollToApply()">
-        <span>Free pilot</span> ⮕
-      </button>
-    </header>
+  <div class="page">
+    <header>
+      <div class="brand">
+        <div class="brand-mark">H</div>
+        <div class="brand-text">
+          <div class="brand-name">Hemline</div>
+          <div class="brand-tagline">AI wardrobe stylist · Early access</div>
+        </div>
+      </div>
+      <button class="nav-cta" onclick="scrollToApply()">
+        <span>Free pilot</span> ⮕
+      </button>
+    </header>
 
-    <main>
-      <!-- Hero -->
-      <section class="hero">
-        <div>
-          <div class="eyebrow">
-            <span class="eyebrow-pill"></span>
-            AI-powered wardrobe styling · Pilot
-          </div>
-          <h1 class="hero-title">
-            Your life moves.  
-            <span class="accent">Your outfits</span> should keep up.
-          </h1>
-          <p class="hero-subtitle">
-            <strong>Hemline</strong> is an AI-powered wardrobe stylist that helps you create new outfits
-            from the clothes you already own – plus a few smart additions – so you feel more like
-            yourself when you get dressed.
-          </p>
+    <main>
+            <section class="hero">
+        <div>
+          <div class="eyebrow">
+            <span class="eyebrow-pill"></span>
+            AI-powered wardrobe styling · Pilot
+          </div>
+          <h1 class="hero-title">
+            Your life moves.  
+            <span class="accent">Your outfits</span> should keep up.
+          </h1>
+          <p class="hero-subtitle">
+            **Hemline** is the AI wardrobe stylist that creates chic, confident outfits from the clothes you already own—and seamlessly finds the missing piece. **Dress better, buy less.**
+          </p>
 
-          <div class="hero-actions">
-            <button class="btn-primary" onclick="scrollToApply()">
-              Apply for free early access
-              <span>⮕</span>
-            </button>
-            <button class="btn-ghost" onclick="document.getElementById('how-it-works').scrollIntoView({behavior:'smooth'})">
-              How the pilot works
-            </button>
-          </div>
-          <p class="hero-footnote">
-            <span>100% free</span> for a small group of early users – we only ask for your feedback.
-          </p>
-        </div>
+          <div class="hero-actions">
+            <button class="btn-primary" onclick="scrollToApply()">
+              Apply for free early access
+              <span>⮕</span>
+            </button>
+            <button class="btn-ghost" onclick="document.getElementById('how-it-works').scrollIntoView({behavior:'smooth'})">
+              How the pilot works
+            </button>
+          </div>
+          <p class="hero-footnote">
+            <span>100% free</span> for a small group of early users – we only ask for your feedback.
+          </p>
+        </div>
 
-        <div class="hero-card">
-          <div class="hero-glow"></div>
-          <div class="hero-card-tag">
-            <span class="dot"></span>
-            Live pilot · Styled by human + AI
-          </div>
-          <div class="hero-card-main">
-            <div class="outfit-list">
-              <div class="outfit-list-title">Sample outfits Hemline might create</div>
-              <div class="outfit-item">
-                <div class="outfit-item-name">“New Job, First Week”</div>
-                <div class="outfit-item-note">Your black trousers + white shirt + updated blazer</div>
-              </div>
-              <div class="outfit-item">
-                <div class="outfit-item-name">“School Run + Coffee”</div>
-                <div class="outfit-item-note">Comfy jeans + old knit + fresh sneakers</div>
-              </div>
-              <div class="outfit-item">
-                <div class="outfit-item-name">“Dinner & Drinks”</div>
-                <div class="outfit-item-note">Forgotten dress + new earrings + your favourite boots</div>
-              </div>
-              <div class="outfit-item">
-                <div class="outfit-item-name">“Work-from-Home, Camera On”</div>
-                <div class="outfit-item-note">Soft pants + structured top + light layering</div>
-              </div>
-            </div>
-            <div class="hero-persona">
-              <div class="persona-header">
-                <div>
-                  <div class="persona-name">You, right now</div>
-                  <div class="persona-tag">Real wardrobe, real life</div>
-                </div>
-                <div class="persona-pill">No face needed · Any style</div>
-              </div>
-              <div class="persona-body">
-                You don’t need a dramatic life story to use Hemline. Maybe you’ve moved, changed jobs,
-                become a mum, or maybe nothing huge has changed – you’re just tired of wearing the same few
-                outfits and want a smarter, kinder way to use what you already own.
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+                <div class="hero-image-container">
+                    <img src="" alt="A stylish, modern outfit suggestion from Hemline" />
+        </div>
+      </section>
 
-      <!-- What Hemline helps with -->
-      <section>
-        <h2 class="section-title">What Hemline can help you with</h2>
-        <p class="section-subtitle">
-          Hemline is for women who feel their wardrobe could better match who they are now – whether
-          life has changed a lot, or you’re simply bored with your current outfits.
-        </p>
-        <div class="two-col">
-          <ul class="bullet-list">
-            <li>
-              <span class="bullet-dot"></span>
-              <div>You wear the same 3–4 outfits on repeat and feel stuck.</div>
-            </li>
-            <li>
-              <span class="bullet-dot"></span>
-              <div>Your closet is full, but you don’t know how to combine what you already own.</div>
-            </li>
-            <li>
-              <span class="bullet-dot"></span>
-              <div>You want a small style upgrade – more confident, more intentional, more “you”.</div>
-            </li>
-            <li>
-              <span class="bullet-dot"></span>
-              <div>
-                You’ve moved countries, changed jobs, become a mum or your body has changed – and your
-                clothes haven’t really caught up.
-              </div>
-            </li>
-          </ul>
-          <ul class="bullet-list">
-            <li>
-              <span class="bullet-dot"></span>
-              <div>You don’t want to start from zero or buy a whole new wardrobe.</div>
-            </li>
-            <li>
-              <span class="bullet-dot"></span>
-              <div>You’d love a stylist, but need something more affordable and down-to-earth.</div>
-            </li>
-            <li>
-              <span class="bullet-dot"></span>
-              <div>
-                You’re curious what an AI stylist could do for you – but still want a human eye involved.
-              </div>
-            </li>
-            <li>
-              <span class="bullet-dot"></span>
-              <div>Your style can be minimal, colourful, sporty, romantic, edgy – any aesthetic is welcome.</div>
-            </li>
-          </ul>
-        </div>
-      </section>
+            <section>
+        <h2 class="section-title">Dress Smarter. Live Lighter.</h2>
+        <p class="section-subtitle">
+          Hemline is for women who want to feel more confident and intentional when they get dressed, without buying a whole new wardrobe.
+        </p>
 
-      <!-- What you get -->
-      <section>
-        <h2 class="section-title">What you’ll get in the free pilot</h2>
-        <div class="two-col">
-          <div>
-            <p class="section-subtitle">
-              In this early access phase, Hemline is a mix of human styling and AI tools. You get real outfits
-              now, and your feedback helps train the smarter version of Hemline later.
-            </p>
-            <ul class="bullet-list">
-              <li>
-                <span class="bullet-dot"></span>
-                <div><strong>3–5 personalised outfits</strong> built around the clothes you already own.</div>
-              </li>
-              <li>
-                <span class="bullet-dot"></span>
-                <div>A few carefully chosen items from online shops to extend or upgrade your looks.</div>
-              </li>
-              <li>
-                <span class="bullet-dot"></span>
-                <div>
-                  Simple explanations of <strong>why</strong> each outfit works – colours, shapes, occasions, and how it fits your life.
-                </div>
-              </li>
-              <li>
-                <span class="bullet-dot"></span>
-                <div>
-                  A small digital “lookbook” you can save and reuse when you’re standing in front of your closet.
-                </div>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <div class="callout">
-              <div class="callout-icon">💡</div>
-              <div>
-                This pilot is <strong>100% free</strong>. There is no payment or subscription.
-                In exchange, we ask for honest feedback so we can shape Hemline around real women’s wardrobes,
-                not just generic data.
-              </div>
-            </div>
-            <div class="tag-row" style="margin-top: 10px;">
-              <span class="tag">Free early access</span>
-              <span class="tag">Limited spots</span>
-              <span class="tag">AI + human stylist</span>
-              <span class="tag">Everyday wardrobes</span>
-            </div>
-          </div>
-        </div>
-      </section>
+        <div class="feature-grid">
+          <div class="feature-card">
+            <div class="feature-card-icon">🔄</div>
+            <div class="feature-card-title">Stop the "Outfit Repeat"</div>
+            <div class="feature-card-body">Unlock hidden combinations from the clothes you already own and expand your rotation instantly.</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-card-icon">🎯</div>
+            <div class="feature-card-title">Personal Style Upgrade</div>
+            <div class="feature-card-body">Move past boredom to a style that is more confident, intentional, and authentically "you."</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-card-icon">🧠</div>
+            <div class="feature-card-title">AI Powered, Human Styled</div>
+            <div class="feature-card-body">Get smart, personalized suggestions vetted by a human stylist to ensure real-world wearability.</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-card-icon">🌍</div>
+            <div class="feature-card-title">Dress for Your Life Now</div>
+            <div class="feature-card-body">We adapt to your life changes—new job, new city, new body—to create relevant, current looks.</div>
+          </div>
+        </div>
+      </section>
 
-      <!-- How it works -->
-      <section id="how-it-works">
-        <h2 class="section-title">How the early access works</h2>
-        <ol class="numbered-steps">
-          <li>
-            <div class="step-badge">1</div>
-            <div>
-              <div class="step-content-title">Apply for early access</div>
-              <div>
-                Fill out a short application with basic info about your clothes, your sizes and what you’d like
-                to improve in your style. You can use just your <strong>first name or a nickname</strong>.
-              </div>
-            </div>
-          </li>
-          <li>
-            <div class="step-badge">2</div>
-            <div>
-              <div class="step-content-title">Share your wardrobe</div>
-              <div>
-                If you’re selected, we’ll ask for photos of <strong>10–20 items</strong> from your current wardrobe
-                (tops, bottoms, dresses, jackets, shoes, key accessories).
-                <br />No face needed. No underwear or very intimate items.
-              </div>
-            </div>
-          </li>
-          <li>
-            <div class="step-badge">3</div>
-            <div>
-              <div class="step-content-title">We style you (AI + human)</div>
-              <div>
-                Behind the scenes, we use a mix of our own styling work and AI tools to create 3–5 outfits for you,
-                tailored to your life, body and preferences.
-              </div>
-            </div>
-          </li>
-          <li>
-            <div class="step-badge">4</div>
-            <div>
-              <div class="step-content-title">You receive & review</div>
-              <div>
-                You get your mini lookbook for free and share what felt right, what didn’t, and what you’d love Hemline
-                to do next. Your feedback helps us design the future app.
-              </div>
-            </div>
-          </li>
-        </ol>
-      </section>
+            <section>
+        <h2 class="section-title">What you’ll get in the free pilot</h2>
+        <div class="two-col">
+          <div>
+            <p class="section-subtitle">
+              In this early access phase, Hemline is a mix of human styling and AI tools. You get real outfits
+              now, and your feedback helps train the smarter version of Hemline later.
+            </p>
+            <ul class="bullet-list">
+              <li>
+                <span class="bullet-dot"></span>
+                <div><strong>3–5 personalised outfits</strong> built around the clothes you already own.</div>
+              </li>
+              <li>
+                <span class="bullet-dot"></span>
+                <div>A few carefully chosen items from online shops to extend or upgrade your looks.</div>
+              </li>
+              <li>
+                <span class="bullet-dot"></span>
+                <div>
+                  Simple explanations of **why** each outfit works—colours, shapes, occasions, and how it fits your life.
+                </div>
+              </li>
+              <li>
+                <span class="bullet-dot"></span>
+                <div>
+                  A small digital “lookbook” you can save and reuse when you’re standing in front of your closet.
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <div class="callout">
+              <div class="callout-icon">💡</div>
+              <div>
+                This pilot is **100% free**. There is no payment or subscription.
+                In exchange, we ask for honest feedback so we can shape Hemline around real women’s wardrobes,
+                not just generic data.
+              </div>
+            </div>
+            <div class="tag-row">
+              <span class="tag">Free early access</span>
+              <span class="tag">Limited spots</span>
+              <span class="tag">AI + human stylist</span>
+              <span class="tag">Everyday wardrobes</span>
+            </div>
+          </div>
+        </div>
+      </section>
 
-      <!-- Privacy -->
-      <section>
-        <h2 class="section-title">Free now. Careful with your data, always.</h2>
-        <div class="two-col">
-          <div>
-            <ul class="bullet-list">
-              <li>
-                <span class="bullet-dot"></span>
-                <div>Hemline is run by a <strong>registered company in Germany</strong>.</div>
-              </li>
-              <li>
-                <span class="bullet-dot"></span>
-                <div>You can use a <strong>nickname or first name only</strong>.</div>
-              </li>
-              <li>
-                <span class="bullet-dot"></span>
-                <div>You <strong>don’t need to show your face</strong> in any photos.</div>
-              </li>
-              <li>
-                <span class="bullet-dot"></span>
-                <div>Please <strong>do not send underwear or very intimate items</strong> – they’re not needed.</div>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <div class="callout">
-              <div class="callout-icon">🔐</div>
-              <div>
-                We treat your answers and images as <strong>sensitive data</strong> and only use them for this pilot
-                and internal research. Nothing will ever be shared publicly without your clear permission.
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+            <section id="how-it-works">
+        <h2 class="section-title">How the early access works</h2>
+        <ol class="numbered-steps">
+          <li>
+            <div class="step-badge">1</div>
+            <div>
+              <div class="step-content-title">Apply for early access</div>
+              <div>
+                Fill out a short application with basic info about your clothes, your sizes and what you’d like
+                to improve in your style. You can use just your **first name or a nickname**.
+              </div>
+            </div>
+          </li>
+          <li>
+            <div class="step-badge">2</div>
+            <div>
+              <div class="step-content-title">Share your wardrobe</div>
+              <div>
+                If you’re selected, we’ll ask for photos of **10–20 items** from your current wardrobe
+                (tops, bottoms, dresses, jackets, shoes, key accessories).
+                <br />No face needed. No underwear or very intimate items.
+              </div>
+            </div>
+          </li>
+          <li>
+            <div class="step-badge">3</div>
+            <div>
+              <div class="step-content-title">We style you (AI + human)</div>
+              <div>
+                Behind the scenes, we use a mix of our own styling work and AI tools to create 3–5 outfits for you,
+                tailored to your life, body and preferences.
+              </div>
+            </div>
+          </li>
+          <li>
+            <div class="step-badge">4</div>
+            <div>
+              <div class="step-content-title">You receive & review</div>
+              <div>
+                You get your mini lookbook for free and share what felt right, what didn’t, and what you’d love Hemline
+                to do next. Your feedback helps us design the future app.
+              </div>
+            </div>
+          </li>
+        </ol>
+      </section>
 
-      <!-- Who we are + CTA -->
-      <section class="cta-section" id="apply">
-        <h2 class="section-title">Who’s building Hemline?</h2>
-        <p class="section-subtitle" style="max-width: 560px; margin: 0 auto 14px;">
-          Hemline is created by Anna and Mojtaba – a stylist-in-training and a data/AI specialist who have both
-          rebuilt their lives (and wardrobes) across countries, careers and parenthood.  
-          We’re using this pilot to learn from real women and build a stylist that’s personal, kind and genuinely useful.
-        </p>
-        <button class="btn-primary" onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSe0cwAGuFC0Yebvc8C0wsJgIWugDVxWaQaIlVsA8n-TeGHXfA/viewform?usp=sharing&ouid=102318593939145554231', '_blank')">
-          Apply for free early access
-        </button>
-        <p>
-          Limited spots · No payment · We’ll email you if you’re selected for this round.
-        </p>
-      </section>
-    </main>
+            <section>
+        <h2 class="section-title">Free now. Careful with your data, always.</h2>
+        <div class="two-col">
+          <div>
+            <ul class="bullet-list">
+              <li>
+                <span class="bullet-dot"></span>
+                <div>Hemline is run by a **registered company in Germany**.</div>
+              </li>
+              <li>
+                <span class="bullet-dot"></span>
+                <div>You can use a **nickname or first name only**.</div>
+              </li>
+              <li>
+                <span class="bullet-dot"></span>
+                <div>You **don’t need to show your face** in any photos.</div>
+              </li>
+              <li>
+                <span class="bullet-dot"></span>
+                <div>Please **do not send underwear or very intimate items**—they’re not needed.</div>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <div class="callout">
+              <div class="callout-icon">🔐</div>
+              <div>
+                We treat your answers and images as **sensitive data** and only use them for this pilot
+                and internal research. Nothing will ever be shared publicly without your clear permission.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-    <footer>
-      © <span id="year"></span> Hemline. Built with a mix of human judgment and AI tools.  
-      <br />
-      Early access pilot · Questions? Contact us via Instagram DM.
-    </footer>
-  </div>
+            <section class="cta-section" id="apply">
+        <h2 class="section-title">Who’s building Hemline?</h2>
+        <p class="section-subtitle" style="max-width: 560px; margin: 0 auto 18px;">
+          Hemline is created by Anna and Mojtaba – a stylist-in-training and a data/AI specialist who have both
+          rebuilt their lives (and wardrobes) across countries, careers and parenthood.  
+          We’re using this pilot to learn from real women and build a stylist that’s personal, kind and genuinely useful.
+        </p>
+        <button class="btn-primary" onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSe0cwAGuFC0Yebvc8C0wsJgIWugDVxWaQaIlVsA8n-TeGHXfA/viewform?usp=sharing&ouid=102318593939145554231', '_blank')">
+          Apply for free early access
+        </button>
+        <p>
+          Limited spots · No payment · We’ll email you if you’re selected for this round.
+        </p>
+      </section>
+    </main>
 
-  <script>
-    function scrollToApply() {
-      const el = document.getElementById('apply');
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
-    document.getElementById('year').textContent = new Date().getFullYear();
-  </script>
+    <footer>
+      © <span id="year"></span> Hemline. Built with a mix of human judgment and AI tools.  
+      <br />
+      Early access pilot · Questions? Contact us via Instagram DM.
+    </footer>
+  </div>
+
+  <script>
+    function scrollToApply() {
+      const el = document.getElementById('apply');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>
